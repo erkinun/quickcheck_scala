@@ -15,14 +15,41 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
   }
 
   lazy val genHeap: Gen[H] = for {
-    i <- arbitrary[Int]
+    i <- choose(-100, 100)
     isEmpty <- arbitrary[Boolean]
     emp <- empty
-    hp <- if (isEmpty) emp else insert(i, emp)
-    gH <- oneOf(const(hp), genHeap)
-  } yield gH
+    //hp <- if (isEmpty) emp else insert(i, emp)
+    gH <- oneOf(const(emp), genHeap)
+  } yield insert(i, gH)
 
   implicit lazy val arbHeap: Arbitrary[H] = Arbitrary(genHeap)
 
+  property("gen1") = forAll { (h: H) =>
+    val m = if (isEmpty(h)) 0 else findMin(h)
+    findMin(insert(m, h))==m
+  }
+
+  def printHeap(h: H) {
+    if (!isEmpty(h)) {
+      println(findMin(h))
+      printHeap(deleteMin(h))
+    }
+  }
+
+//  property("genPrint") = forAll { (h: H) =>
+//    println("printing heap")
+//    printHeap(h)
+//    true
+//  }
+
+  property("findMin1") = forAll { (h1: H, h2: H) =>
+    val min1 = findMin(h1)
+    val min2 = findMin(h2)
+
+    val merged = meld(h1, h2)
+    val mergeMin = findMin(merged)
+
+    min1 == mergeMin || min2 == mergeMin
+  }
 
 }
