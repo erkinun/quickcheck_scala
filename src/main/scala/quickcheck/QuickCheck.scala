@@ -52,4 +52,30 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
     min1 == mergeMin || min2 == mergeMin
   }
 
+
+  property("priorityqueue") = forAll { h: H =>
+
+    val retList = getElements(h, List.empty)
+
+
+    println("returning list size: " + retList.size, " heap empty: " + isEmpty(h))
+    isEmpty(h) || retList.size > 0
+  }
+
+  def insertIntoHeap(h: H, ints: List[Int]) :H = {
+    ints match {
+      case Nil => h
+      case x :: xs => insertIntoHeap(insert(x, h), xs)
+    }
+  }
+
+  def getElements(h: H, list: List[Int]): List[Int] = {
+    isEmpty(h) match {
+      case true => list
+      case false =>
+        findMin(h) :: list
+        getElements(deleteMin(h), list)
+    }
+  }
+
 }
