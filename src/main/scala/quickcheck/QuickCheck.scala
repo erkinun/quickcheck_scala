@@ -15,11 +15,11 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
   }
 
   lazy val genHeap: Gen[H] = for {
-    i <- choose(-100, 100)
+    i <- choose(0, 100)
     isEmpty <- arbitrary[Boolean]
-    emp <- empty
+    //emp <- empty
     //hp <- if (isEmpty) emp else insert(i, emp)
-    gH <- oneOf(const(emp), genHeap)
+    gH <- oneOf(const(empty), genHeap)
   } yield insert(i, gH)
 
   implicit lazy val arbHeap: Arbitrary[H] = Arbitrary(genHeap)
@@ -41,6 +41,10 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
 //    printHeap(h)
 //    true
 //  }
+//
+//  property("someProp") = forAll { h: H =>
+//    true == false
+//  }
 
   property("findMin1") = forAll { (h1: H, h2: H) =>
     val min1 = findMin(h1)
@@ -57,9 +61,8 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
 
     val retList = getElements(h, List.empty)
 
-
-    println("returning list size: " + retList.size, " heap empty: " + isEmpty(h))
     isEmpty(h) || retList.size > 0
+    //true
   }
 
   def insertIntoHeap(h: H, ints: List[Int]) :H = {
@@ -73,8 +76,8 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
     isEmpty(h) match {
       case true => list
       case false =>
-        findMin(h) :: list
-        getElements(deleteMin(h), list)
+        val newList = findMin(h) :: list
+        getElements(deleteMin(h), newList)
     }
   }
 
