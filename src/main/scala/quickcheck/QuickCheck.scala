@@ -61,8 +61,10 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
 
     val retList = getElements(h, List.empty)
 
-    isEmpty(h) || retList.size > 0
-    //true
+    val reverse = retList.reverse
+    val sorted = retList sortBy (i => i)
+
+    sorted.equals(reverse)
   }
 
   def insertIntoHeap(h: H, ints: List[Int]) :H = {
