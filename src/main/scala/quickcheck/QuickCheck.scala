@@ -14,6 +14,22 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
     findMin(h) == a
   }
 
+  property("empty") = forAll {a: Int =>
+    val h = insert(a, empty)
+    val nH = deleteMin(h)
+    isEmpty(nH)
+  }
+
+  property("minOfTwo") = forAll { (i1: Int, i2: Int) =>
+    val h = insert(i1, insert(i2, empty))
+
+    val min = if (i1 <= i2) i1 else i2
+
+    val minH = findMin(h)
+
+    min == minH
+  }
+
   lazy val genHeap: Gen[H] = for {
     i <- choose(0, 100)
     isEmpty <- arbitrary[Boolean]
@@ -56,6 +72,14 @@ abstract class QuickCheckHeap extends Properties("Heap") with IntHeap {
     min1 == mergeMin || min2 == mergeMin
   }
 
+  property("allRetrieved") = forAll { list: List[Int] =>
+    val heap = insertIntoHeap(empty, list)
+
+    val retList = getElements(heap, List.empty).reverse
+
+    val sortedList = list.sortBy(i=>i)
+    retList.equals(sortedList)
+  }
 
   property("priorityqueue") = forAll { h: H =>
 
